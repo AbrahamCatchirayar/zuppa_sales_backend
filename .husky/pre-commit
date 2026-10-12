@@ -1,0 +1,6 @@
+FILE_COUNT=$(git diff --cached --name-only | grep -v 'pre-commit' | wc -l)
+
+# if [ "$FILE_COUNT" -gt 15 ]; then
+#   echo "Too many files staged for commit. Maximum allowed is 15."
+#   exit 1
+# fi

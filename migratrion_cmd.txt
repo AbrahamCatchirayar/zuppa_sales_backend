@@ -1,0 +1,32 @@
+Migration Management Guide
+1. Admin Database Migrations
+Generate Admin Migration:
+npm run typeorm:cli -- migration:generate src/migration/admin/your-migration-name
+
+Run Admin Migrations:
+npm run typeorm:cli -- migration:run
+
+Revert Admin Migration:
+npm run typeorm:cli -- migration:revert
+
+2. Tenant Database Migrations
+Generate Tenant Migration:
+
+# List tenant schemas
+npm run list_tenant_schemas
+
+# Admin migrations
+npm run typeorm:cli -- migration:run
+npm run typeorm:cli -- migration:generate src/migration/admin/name
+npm run typeorm:cli -- migration:revert
+
+# Tenant migrations
+npm run typeorm_tenant:cli -- migration:run
+npm run typeorm_tenant:cli -- migration:generate src/migration/tenanted/name
+npm run typeorm_tenant:cli -- migration:revert
+
+# For specific tenant
+TENANT_SCHEMA=tenent_06833a4f-a278-451e-bdb3-7396cdd94cb5 npm run typeorm_tenant:cli -- migration:run
+
+# For all tenants
+npm run tenant_migrations_all

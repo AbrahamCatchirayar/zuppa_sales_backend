@@ -1,0 +1,40 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore Next.js build output
+.next/
+
+# Ignore build output
+out/
+dist/
+
+# Ignore logs
+logs/
+
+# Ignore coverage reports
+coverage/
+
+# Ignore local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore TypeScript declaration files
+*.d.ts
+
+# Ignore specific test files if needed
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Ignore certain generated files
+*.min.js
+*.config.js
+
+tailwind.config.js
+postcc.config.js
+next-env.d.ts
+.eslintrc.js

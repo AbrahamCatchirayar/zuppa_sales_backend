@@ -1,0 +1,60 @@
+{
+  "ADMIN_ROLE": ["SUPERADMIN"],
+
+  "SUPERADMIN": {
+    "first_name": "Admin",
+    "last_name": "rubicr",
+    "role": {
+      "name": "SUPERADMIN"
+    },
+    "email": "admin@rubicr.com",
+    "password": "Imp@ctree@2025",
+    "accept_terms_of_service": true,
+    "status": "ACTIVE"
+  },
+
+  "TENENT_ROLES": [
+    "GUEST",
+    "ADMIN",
+    "SUSTAINABILITY_MANAGER",
+    "DATA_REVIEWER",
+    "DATA_PROVIDER"
+  ],
+
+  "MODULES": [
+    "USER",
+    "DATA_CUBE",
+    "TASK",
+    "ORGANIZATION",
+    "BUSINESS_UNIT",
+    "GENERAL_INFO",
+    "SETTINGS",
+    "HEADER",
+    "REPORTS",
+    "INSIGHTS",
+    "DISCLOSURE",
+    "LANDING_PAGE"
+  ],
+
+  "TENENT_FEATURES": {
+    "USER": [
+      "READ",
+      "UPDATE",
+      "INVITE",
+      "RESEND_INVITE",
+      "DELETE",
+      "BLOCK/UNBLOCK"
+    ],
+    "DATA_CUBE": ["READ", "CONFIG", "WRITE", "UPDATE", "DELETE"],
+    "TASK": ["READ", "WRITE", "UPDATE", "DELETE", "APPROVE/REJECT", "REASSIGN"],
+    "ORGANIZATION": ["READ", "UPDATE", "CHANGE_PLAN"],
+    "BUSINESS_UNIT": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "GENERAL_INFO": ["READ", "UPDATE"],
+    "SETTINGS": ["COMPANY_PROFILE", "BUSINESS_UNIT", "ROLES"],
+    "HEADER": ["HOME", "DATA_CUBES", "USERS", "TASKS"],
+    "REPORTS": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "INSIGHTS": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "DISCLOSURE": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "LANDING_PAGE": ["READ", "WRITE", "UPDATE", "DELETE"]
+  }
+}
