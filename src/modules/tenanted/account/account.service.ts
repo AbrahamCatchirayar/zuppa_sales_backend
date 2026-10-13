@@ -30,7 +30,6 @@ export class AccountService {
   async findAccount(user) {
     const account = await this.accountModel.findOne({
       where: { id: user.account.id },
-      relations: ['business_unit', 'business_unit.sites'],
     });
     return account;
   }

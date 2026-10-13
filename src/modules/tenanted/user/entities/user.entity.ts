@@ -2,7 +2,6 @@ import * as bcrypt from 'bcryptjs';
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../../../utils/abstract.entity';
 import { Account } from '../../account/account.entity';
-import { Disclosure } from '../../disclosure/disclosure.entity';
 
 @Entity({ name: 'user' })
 export class User extends AbstractEntity {
@@ -83,9 +82,6 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Account, (account) => account.user)
   account: Account;
-
-  @OneToMany(() => Disclosure, (disclosure) => disclosure.submitted_by)
-  disclosures: Disclosure;
 
   @BeforeInsert()
   async beforeInsert() {

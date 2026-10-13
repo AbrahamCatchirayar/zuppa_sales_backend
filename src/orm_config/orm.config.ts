@@ -26,6 +26,6 @@ module.exports = {
   //         ca: readFileSync(process.env.DB_CERTIFICATE).toString(),
   //       },
   autoLoadEntities: true,
-  entities: [join(__dirname, './modules/base/**/*.entity{.ts,.js}')],
+  entities: [],
   migrations: [join(__dirname, './migrations/admin/*{.ts,.js}')],
 };

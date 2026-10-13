@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../../utils/abstract.entity';
-import { BusinessUnit } from '../businessunit/businessunit.entity';
 import { User } from '../user/entities/user.entity';
 
 @Entity({ name: 'account' })
@@ -51,10 +50,4 @@ export class Account extends AbstractEntity {
 
   @Column('text', { array: true, nullable: true })
   standards: string[];
-
-  @OneToMany(() => BusinessUnit, (unit) => unit.account)
-  business_unit: BusinessUnit[];
-
-  // @OneToMany(() => Reports, (report) => report.account)
-  // reports: Reports[];
 }

@@ -8,7 +8,6 @@ import { AuthModule } from '../auth/auth.module';
 import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { DisclosureModule } from '../disclosure/disclosure.module';
 // import { ReportUser } from '../task_site/task-site.entity';
 
 @Module({
@@ -18,7 +17,6 @@ import { DisclosureModule } from '../disclosure/disclosure.module';
     forwardRef(() => MailModule),
     forwardRef(() => AuthModule),
     FileStorageModule,
-    forwardRef(() => DisclosureModule),
     // forwardRef(() => TaskModule),
     // forwardRef(() => ReportsModule),
   ],

@@ -7,7 +7,6 @@ import { groupBy } from 'lodash';
 import { diskStorage, memoryStorage } from 'multer';
 import { extname } from 'path';
 import * as CONFIG from 'src/config.json';
-import { ConsolidatedModule } from './modules/tenanted/datacubes/conslidate_modules.interface';
 
 export function camelize(str: string) {
   return str
@@ -397,7 +396,7 @@ export const getStatusValue = (value: any, key: string) => {
 export const consolidatedGrouping = (
   standardModules,
   standard_ids,
-): Promise<ConsolidatedModule[]> => {
+): Promise<any[]> => {
   const grouped = groupBy(standardModules, (sm: any) => sm.master_module.id);
 
   const commonModules: any = Object.values(grouped).map((moduleGroup: any) => {
