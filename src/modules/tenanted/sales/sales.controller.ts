@@ -9,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/jwt/jwt-gaurd';
-import { CreateCategoryDto, CreateOptionCodeDto } from './dto/sales.dto';
+import {
+  CreateCategoryDto,
+  CreateConfiguredProductDto,
+  CreateOptionCodeDto,
+} from './dto/sales.dto';
 import { SalesService } from './sales.service';
 
 @Controller('v1/sales')
@@ -73,5 +77,26 @@ export class SalesController {
   @Delete('options/:id')
   async deleteOptionCode(@Param('id') id: string) {
     return await this.salesService.deleteOptionCode(id);
+  }
+
+  // Configured Products
+  @Get('configured-products')
+  async getConfiguredProducts() {
+    const res = await this.salesService.getConfiguredProducts();
+    return {
+      success: true,
+      data: res.products,
+      count: res.count,
+    };
+  }
+
+  @Post('configured-products')
+  async createConfiguredProduct(@Body() body: CreateConfiguredProductDto) {
+    const product = await this.salesService.createConfiguredProduct(body);
+    return {
+      success: true,
+      data: product,
+      message: 'Product configuration published successfully',
+    };
   }
 }

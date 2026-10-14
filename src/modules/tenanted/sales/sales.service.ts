@@ -6,8 +6,13 @@ import {
 } from '@nestjs/common';
 import { CONNECTION } from 'src/modules/tenancy/tenancy.symbol';
 import { DataSource, Repository } from 'typeorm';
-import { CreateCategoryDto, CreateOptionCodeDto } from './dto/sales.dto';
+import {
+  CreateCategoryDto,
+  CreateConfiguredProductDto,
+  CreateOptionCodeDto,
+} from './dto/sales.dto';
 import { Category } from './entities/category.entity';
+import { ConfiguredProduct } from './entities/configured-product.entity';
 import { OptionCode } from './entities/option-code.entity';
 
 @Injectable()
@@ -28,47 +33,130 @@ export class SalesService {
     return this.connection.getRepository(OptionCode);
   }
 
+  private get configuredProductRepo(): Repository<ConfiguredProduct> {
+    if (!this.connection) {
+      throw new BadRequestException('Tenant connection not found');
+    }
+    return this.connection.getRepository(ConfiguredProduct);
+  }
+
   async seedDefaultsIfEmpty() {
     const count = await this.categoryRepo.count();
     if (count > 0) return;
 
-    // Seed initial categories & option codes from design
-    const brand = await this.categoryRepo.save({
-      name: 'Brand',
-      code: 'brand',
-      description: 'The manufacturing brand or series',
-      parent_branch: null,
-    });
+    const categories = [
+      {
+        name: 'Brand',
+        code: 'brand',
+        description: 'The manufacturing brand or series',
+        parent_branch: null,
+        options: [
+          { name: 'EZFly', code: 'EZF' },
+          { name: 'Ajeet Mini Hawk', code: 'AMH' },
+          { name: 'Ajeet Mini Shikra', code: 'AMS' },
+          { name: 'Ajeet Eagle', code: 'AEB' },
+          { name: 'Navgati', code: 'NGT' },
+          { name: 'Navgati - Lite', code: 'NGL' },
+        ],
+      },
+      {
+        name: 'Application',
+        code: 'application',
+        description: 'Primary deployment scenario',
+        parent_branch: null,
+        options: [
+          { name: 'Surveillance', code: 'SRV' },
+          { name: 'Delivery', code: 'DLV' },
+          { name: 'Inspection', code: 'ISP' },
+          { name: 'Mapping', code: 'MAP' },
+        ],
+      },
+      {
+        name: 'Platform',
+        code: 'platform',
+        description: 'Core airframe and platform model',
+        parent_branch: 'Core Platform (Core)',
+        options: [
+          { name: 'Hawk', code: 'HWK' },
+          { name: 'Falcon', code: 'FLC' },
+          { name: 'Eagle', code: 'EGL' },
+        ],
+      },
+      {
+        name: 'Gimbal',
+        code: 'gimbal',
+        description: 'Gimbal stabilization payload mount',
+        parent_branch: 'Core Platform (Core)',
+        options: [
+          { name: 'With Gimbal (2-Axis)', code: 'G2' },
+          { name: 'With Gimbal (3-Axis)', code: 'G3' },
+          { name: 'Fixed Mount', code: 'FX' },
+        ],
+      },
+      {
+        name: 'Camera',
+        code: 'camera',
+        description: 'Primary visual or thermal sensor',
+        parent_branch: 'Core Platform (Core)',
+        options: [
+          { name: 'Camera - C5', code: 'C5' },
+          { name: 'Camera - C10', code: 'C10' },
+          { name: 'Thermal Camera', code: 'THM' },
+        ],
+      },
+      {
+        name: 'Controller',
+        code: 'controller',
+        description: 'Remote telemetry controller mode',
+        parent_branch: 'Add-ons',
+        options: [
+          { name: 'With Master / Slave', code: 'MS' },
+          { name: 'Standard Handheld', code: 'STD' },
+          { name: 'Ground Station', code: 'GCS' },
+        ],
+      },
+      {
+        name: 'Payload',
+        code: 'payload',
+        description: 'Secondary task payload attachments',
+        parent_branch: 'Add-ons',
+        options: [
+          { name: 'No', code: 'NPL' },
+          { name: 'LiDAR Unit', code: 'LDR' },
+          { name: 'Drop Mechanism', code: 'DRP' },
+        ],
+      },
+      {
+        name: 'Other Customization',
+        code: 'other_customization',
+        description: 'Optional peripherals and accessories',
+        parent_branch: 'Add-ons',
+        options: [
+          { name: 'No', code: 'NCST' },
+          { name: 'Long Range Antenna', code: 'LRA' },
+          { name: 'Rugged Case', code: 'RGC' },
+        ],
+      },
+    ];
 
-    await this.optionRepo.save([
-      { category_id: brand.id, name: 'EZFly', code: 'EZF' },
-      { category_id: brand.id, name: 'Ajeet Mini Hawk', code: 'AMH' },
-      { category_id: brand.id, name: 'Ajeet Mini Shikra', code: 'AMS' },
-      { category_id: brand.id, name: 'Ajeet Eagle', code: 'AEB' },
-      { category_id: brand.id, name: 'Navgati', code: 'NGT' },
-      { category_id: brand.id, name: 'Navgati - Lite', code: 'NGL' },
-    ]);
+    for (const cat of categories) {
+      const savedCat = await this.categoryRepo.save({
+        name: cat.name,
+        code: cat.code,
+        description: cat.description,
+        parent_branch: cat.parent_branch,
+      });
 
-    const app = await this.categoryRepo.save({
-      name: 'Application',
-      code: 'application',
-      description: 'Primary deployment scenario',
-      parent_branch: null,
-    });
-
-    await this.optionRepo.save([
-      { category_id: app.id, name: 'Surveillance', code: 'SRV' },
-      { category_id: app.id, name: 'Delivery', code: 'DLV' },
-      { category_id: app.id, name: 'Inspection', code: 'ISP' },
-      { category_id: app.id, name: 'Mapping', code: 'MAP' },
-    ]);
-
-    await this.categoryRepo.save({
-      name: 'Platform',
-      code: 'platform',
-      description: 'Core airframe and platform model',
-      parent_branch: 'Core Platform (Core)',
-    });
+      if (cat.options?.length) {
+        await this.optionRepo.save(
+          cat.options.map((opt) => ({
+            category_id: savedCat.id,
+            name: opt.name,
+            code: opt.code,
+          })),
+        );
+      }
+    }
   }
 
   async findAllCategories() {
@@ -156,5 +244,28 @@ export class SalesService {
     }
     await this.optionRepo.remove(option);
     return { success: true, message: 'Option code deleted successfully' };
+  }
+
+  // Configured Products
+  async getConfiguredProducts() {
+    const [products, count] = await this.configuredProductRepo.findAndCount({
+      order: { created_at: 'DESC' },
+    });
+    return {
+      products,
+      count,
+    };
+  }
+
+  async createConfiguredProduct(dto: CreateConfiguredProductDto) {
+    const newConfig = this.configuredProductRepo.create({
+      product_code: dto.productCode.trim(),
+      revision_number: dto.revisionNumber?.trim() || 'R0',
+      revision_date: dto.revisionDate || new Date().toISOString().split('T')[0],
+      configuration: dto.configuration || {},
+      status: dto.status || 'PUBLISHED',
+    });
+
+    return await this.configuredProductRepo.save(newConfig);
   }
 }
