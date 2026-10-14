@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax, no-await-in-loop, no-return-await */
 import {
   BadRequestException,
   Inject,
@@ -10,6 +11,7 @@ import {
   CreateCategoryDto,
   CreateConfiguredProductDto,
   CreateOptionCodeDto,
+  UpdateConfiguredProductDto,
 } from './dto/sales.dto';
 import { Category } from './entities/category.entity';
 import { ConfiguredProduct } from './entities/configured-product.entity';
@@ -186,7 +188,10 @@ export class SalesService {
   async createCategory(dto: CreateCategoryDto) {
     const code =
       dto.code?.trim().toLowerCase() ||
-      dto.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_');
+      dto.name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '_');
 
     const newCategory = this.categoryRepo.create({
       name: dto.name.trim(),
@@ -247,7 +252,150 @@ export class SalesService {
   }
 
   // Configured Products
+  async seedDefaultConfiguredProductsIfEmpty() {
+    const count = await this.configuredProductRepo.count();
+    if (count > 0) return;
+
+    const mockProducts = [
+      {
+        product_code: 'ZUP-EZF-HWK-R0-1',
+        revision_number: 'R0',
+        revision_date: '2026-07-09',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'With Gimbal (2-Axis) (G2)',
+          Camera: 'Camera - C5 (C5)',
+          Controller: 'With Master / Slave (MS)',
+          Payload: 'No (NPL)',
+          'Other Customization': 'Yes, If Applicable - No If Not (Y/AN)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-2',
+        revision_number: 'R0',
+        revision_date: '2026-07-09',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'With Gimbal (2-Axis) (G2)',
+          Camera: 'Camera - C5 (C5)',
+          Controller: 'Without Master Slave (WMS)',
+          Payload: 'No (NPL)',
+          'Other Customization': 'Yes, If Applicable - No If Not (Y/AN)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-3',
+        revision_number: 'R0',
+        revision_date: '2026-07-09',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'Without Gimbal (NG)',
+          Camera: 'NIL (NIL)',
+          Controller: 'With Master / Slave (MS)',
+          Payload: 'No (NPL)',
+          'Other Customization': 'Yes, If Applicable - No If Not (Y/AN)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-4',
+        revision_number: 'R0',
+        revision_date: '2026-07-09',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'Without Gimbal (NG)',
+          Camera: 'NIL (NIL)',
+          Controller: 'Without Master Slave (WMS)',
+          Payload: 'No (NPL)',
+          'Other Customization': 'Yes, If Applicable - No If Not (Y/AN)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-5',
+        revision_number: 'R0',
+        revision_date: '2026-07-10',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Mapping & Survey (MAP)',
+          Gimbal: 'With Gimbal (2-Axis) (G2)',
+          Camera: 'Camera - C10 (C10)',
+          Controller: 'Ground Station (GCS)',
+          Payload: 'LiDAR Unit (LDR)',
+          'Other Customization': 'Long Range Antenna (LRA)',
+        },
+      },
+      {
+        product_code: 'ZUP-AMH-HWK-R0-6',
+        revision_number: 'R0',
+        revision_date: '2026-07-11',
+        status: 'Draft',
+        configuration: {
+          Brand: 'Ajeet Mini Hawk (AMH)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Industrial Inspection (IND)',
+          Gimbal: 'With Gimbal (3-Axis) (G3)',
+          Camera: 'Thermal Camera (THM)',
+          Controller: 'Standard Handheld (STD)',
+          Payload: 'Drop Mechanism (DRP)',
+          'Other Customization': 'Rugged Case (RGC)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-7',
+        revision_number: 'R0',
+        revision_date: '2026-07-12',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'With Gimbal (2-Axis) (G2)',
+          Camera: 'Camera - C10 (C10)',
+          Controller: 'With Master / Slave (MS)',
+          Payload: 'No (NPL)',
+          'Other Customization': 'No (NCST)',
+        },
+      },
+      {
+        product_code: 'ZUP-EZF-HWK-R0-8',
+        revision_number: 'R0',
+        revision_date: '2026-07-13',
+        status: 'Published',
+        configuration: {
+          Brand: 'EZFly (EZF)',
+          Platform: 'Hawk (HWK)',
+          Application: 'Surveillance (SRV)',
+          Gimbal: 'Without Gimbal (NG)',
+          Camera: 'Camera - C5 (C5)',
+          Controller: 'Ground Station (GCS)',
+          Payload: 'LiDAR Unit (LDR)',
+          'Other Customization': 'Rugged Case (RGC)',
+        },
+      },
+    ];
+
+    for (const item of mockProducts) {
+      await this.configuredProductRepo.save(
+        this.configuredProductRepo.create(item),
+      );
+    }
+  }
+
   async getConfiguredProducts() {
+    await this.seedDefaultConfiguredProductsIfEmpty();
     const [products, count] = await this.configuredProductRepo.findAndCount({
       order: { created_at: 'DESC' },
     });
@@ -263,9 +411,40 @@ export class SalesService {
       revision_number: dto.revisionNumber?.trim() || 'R0',
       revision_date: dto.revisionDate || new Date().toISOString().split('T')[0],
       configuration: dto.configuration || {},
-      status: dto.status || 'PUBLISHED',
+      status: dto.status || 'Published',
     });
 
     return await this.configuredProductRepo.save(newConfig);
+  }
+
+  async updateConfiguredProduct(id: string, dto: UpdateConfiguredProductDto) {
+    const product = await this.configuredProductRepo.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException(`Configured product with ID ${id} not found`);
+    }
+
+    if (dto.productCode !== undefined)
+      product.product_code = dto.productCode.trim();
+    if (dto.revisionNumber !== undefined)
+      product.revision_number = dto.revisionNumber.trim();
+    if (dto.revisionDate !== undefined)
+      product.revision_date = dto.revisionDate;
+    if (dto.configuration !== undefined)
+      product.configuration = dto.configuration;
+    if (dto.status !== undefined) product.status = dto.status;
+
+    return await this.configuredProductRepo.save(product);
+  }
+
+  async deleteConfiguredProduct(id: string) {
+    const product = await this.configuredProductRepo.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException(`Configured product with ID ${id} not found`);
+    }
+    await this.configuredProductRepo.remove(product);
+    return {
+      success: true,
+      message: 'Configured product deleted successfully',
+    };
   }
 }

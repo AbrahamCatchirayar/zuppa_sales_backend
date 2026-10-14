@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import {
   CreateCategoryDto,
   CreateConfiguredProductDto,
   CreateOptionCodeDto,
+  UpdateConfiguredProductDto,
 } from './dto/sales.dto';
 import { SalesService } from './sales.service';
 
@@ -49,7 +51,7 @@ export class SalesController {
 
   @Delete('categories/:id')
   async deleteCategory(@Param('id') id: string) {
-    return await this.salesService.deleteCategory(id);
+    return this.salesService.deleteCategory(id);
   }
 
   @Get('categories/:categoryId/options')
@@ -76,7 +78,7 @@ export class SalesController {
 
   @Delete('options/:id')
   async deleteOptionCode(@Param('id') id: string) {
-    return await this.salesService.deleteOptionCode(id);
+    return this.salesService.deleteOptionCode(id);
   }
 
   // Configured Products
@@ -98,5 +100,23 @@ export class SalesController {
       data: product,
       message: 'Product configuration published successfully',
     };
+  }
+
+  @Put('configured-products/:id')
+  async updateConfiguredProduct(
+    @Param('id') id: string,
+    @Body() body: UpdateConfiguredProductDto,
+  ) {
+    const product = await this.salesService.updateConfiguredProduct(id, body);
+    return {
+      success: true,
+      data: product,
+      message: 'Configured product updated successfully',
+    };
+  }
+
+  @Delete('configured-products/:id')
+  async deleteConfiguredProduct(@Param('id') id: string) {
+    return this.salesService.deleteConfiguredProduct(id);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file, @typescript-eslint/no-explicit-any */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
@@ -45,6 +46,32 @@ export class CreateConfiguredProductDto {
   @IsNotEmpty()
   @IsString()
   revisionNumber: string;
+
+  @ApiPropertyOptional({ example: '2026-10-14' })
+  @IsOptional()
+  @IsString()
+  revisionDate?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  configuration?: Record<string, any>;
+
+  @ApiPropertyOptional({ example: 'PUBLISHED' })
+  @IsOptional()
+  @IsString()
+  status?: string;
+}
+
+export class UpdateConfiguredProductDto {
+  @ApiPropertyOptional({ example: 'ZUP-EZF-HWK-R0-1' })
+  @IsOptional()
+  @IsString()
+  productCode?: string;
+
+  @ApiPropertyOptional({ example: 'R0' })
+  @IsOptional()
+  @IsString()
+  revisionNumber?: string;
 
   @ApiPropertyOptional({ example: '2026-10-14' })
   @IsOptional()
