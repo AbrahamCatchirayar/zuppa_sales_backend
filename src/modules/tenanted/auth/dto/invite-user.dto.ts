@@ -27,12 +27,10 @@ export class Invitation extends BasicInvitation {
 
   @ApiPropertyOptional({
     description: 'user role',
-    enum: TENENT_ROLE,
     default: 'ADMIN',
   })
   @IsString()
   @IsOptional()
-  @IsIn(TENENT_ROLE)
   role?: string;
 }
 

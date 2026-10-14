@@ -34,38 +34,11 @@ export class Userfilter {
   department?: string;
 
   @ApiPropertyOptional({
-    description: 'The status of the user',
-    enum: [
-      'GUEST',
-      'ADMIN',
-      'SUSTAINABILITY_MANAGER',
-      'DATA_REVIEWER',
-      'DATA_PROVIDER',
-    ],
-    enumName: 'role',
+    description: 'The role of the user',
   })
   @IsString()
-  @IsEnum(
-    [
-      'GUEST',
-      'ADMIN',
-      'SUSTAINABILITY_MANAGER',
-      'DATA_REVIEWER',
-      'DATA_PROVIDER',
-    ],
-    {
-      message:
-        'role must be GUEST, ADMIN, SUSTAINABILITY_MANAGER, DATA_REVIEWER, DATA_PROVIDER,',
-    },
-  )
   @IsOptional()
-  role?: [
-    'GUEST',
-    'ADMIN',
-    'SUSTAINABILITY_MANAGER',
-    'DATA_REVIEWER',
-    'DATA_PROVIDER',
-  ];
+  role?: string;
 
   @ApiPropertyOptional({
     description: 'The status of the user',
@@ -119,38 +92,11 @@ export class UpdateUserByIdDto {
   phone_number?: string;
 
   @ApiPropertyOptional({
-    description: 'The status of the user',
-    enum: [
-      'GUEST',
-      'ADMIN',
-      'SUSTAINABILITY_MANAGER',
-      'DATA_REVIEWER',
-      'DATA_PROVIDER',
-    ],
-    enumName: 'userrole',
+    description: 'The role of the user',
   })
   @IsString()
-  @IsEnum(
-    [
-      'GUEST',
-      'ADMIN',
-      'SUSTAINABILITY_MANAGER',
-      'DATA_REVIEWER',
-      'DATA_PROVIDER',
-    ],
-    {
-      message:
-        'role must be GUEST, ADMIN, SUSTAINABILITY_MANAGER, DATA_REVIEWER, DATA_PROVIDER,',
-    },
-  )
   @IsOptional()
-  role?: [
-    'GUEST',
-    'ADMIN',
-    'SUSTAINABILITY_MANAGER',
-    'DATA_REVIEWER',
-    'DATA_PROVIDER',
-  ];
+  role?: string;
 }
 
 export class BlockReasonDto {

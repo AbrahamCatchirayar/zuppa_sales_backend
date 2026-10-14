@@ -35,9 +35,10 @@ export class RoleController {
 
   @Get('config')
   async getRolesConfig() {
+    const roles = await this.roleService.findall();
     return {
       success: true,
-      role: CONFIG.TENENT_ROLES,
+      role: roles && roles.length > 0 ? roles : CONFIG.TENENT_ROLES,
       module: CONFIG.MODULES,
       feature: CONFIG.TENENT_FEATURES,
     };

@@ -75,35 +75,22 @@ export enum AdminFeatures {
 }
 
 export const AdminModules = [
-  'GUEST',
   'ADMIN',
-  'SUSTAINABILITY_MANAGER',
-  'DATA_REVIEWER',
-  'DATA_PROVIDER',
+  'SALES',
+  'ENGINEERING',
 ];
 
 export const TENENT_ROLE = [
-  'GUEST',
   'ADMIN',
-  'SUSTAINABILITY_MANAGER',
-  'DATA_REVIEWER',
-  'DATA_PROVIDER',
+  'SALES',
+  'ENGINEERING',
 ];
 
 export const TenentModules = [
   'USER',
-  'DATA_CUBE',
-  'TASK',
-  'REPORT',
-  'INSIGHTS',
-  'DISCLOSURE',
-  'LANDING_PAGE',
-  'ORGANIZATION',
-  'BUSINESS_UNIT',
-  'GENERAL_INFO',
   'SETTINGS',
   'HEADER',
-  'EMISSIONS_DATABASE',
+  'ORGANIZATION',
 ];
 
 export enum ActivityType {
@@ -166,11 +153,19 @@ export const get_tenent_roles = () => {
 };
 
 export const default_tenent_roles = {
-  GUEST: CONFIG.TENENT_FEATURES,
   ADMIN: CONFIG.TENENT_FEATURES,
-  SUSTAINABILITY_MANAGER: CONFIG.TENENT_FEATURES,
-  DATA_REVIEWER: CONFIG.TENENT_FEATURES,
-  DATA_PROVIDER: CONFIG.TENENT_FEATURES,
+  SALES: {
+    USER: ['READ'],
+    SETTINGS: [],
+    HEADER: ['USERS'],
+    ORGANIZATION: ['READ'],
+  },
+  ENGINEERING: {
+    USER: ['READ'],
+    SETTINGS: [],
+    HEADER: ['USERS'],
+    ORGANIZATION: ['READ'],
+  },
 };
 
 export const passwordRegex =
