@@ -10,11 +10,14 @@ import { DataSource, Repository } from 'typeorm';
 import {
   CreateCategoryDto,
   CreateConfiguredProductDto,
+  CreateJobOrderDto,
   CreateOptionCodeDto,
   UpdateConfiguredProductDto,
+  UpdateJobOrderDto,
 } from './dto/sales.dto';
 import { Category } from './entities/category.entity';
 import { ConfiguredProduct } from './entities/configured-product.entity';
+import { JobOrder } from './entities/job-order.entity';
 import { OptionCode } from './entities/option-code.entity';
 
 @Injectable()
@@ -40,6 +43,13 @@ export class SalesService {
       throw new BadRequestException('Tenant connection not found');
     }
     return this.connection.getRepository(ConfiguredProduct);
+  }
+
+  private get jobOrderRepo(): Repository<JobOrder> {
+    if (!this.connection) {
+      throw new BadRequestException('Tenant connection not found');
+    }
+    return this.connection.getRepository(JobOrder);
   }
 
   async seedDefaultsIfEmpty() {
@@ -445,6 +455,394 @@ export class SalesService {
     return {
       success: true,
       message: 'Configured product deleted successfully',
+    };
+  }
+
+  // ==================== JOB ORDERS ====================
+
+  async seedDefaultJobOrdersIfEmpty() {
+    const count = await this.jobOrderRepo.count();
+    if (count > 0) return;
+
+    const mockOrders = [
+      {
+        work_order_no: 'WO-2026-001',
+        customer_name: 'AeroGroup Solutions',
+        contact_person: 'Robert Chen',
+        contact_mobile: '+1 (555) 019-2831',
+        customer_email: 'r.chen@aerogroup.com',
+        customer_address: '100 Innovation Way, Suite 400, Boston, MA 02110',
+        purchase_order_number: 'PO-882010',
+        order_type: 'New',
+        payment_status: 'Paid',
+        status: 'Inventory Allocation',
+        status_item_count: '6/7 ITEM',
+        date_of_request: '2026-07-06',
+        target_delivery_date: '2026-07-20',
+        actual_delivery_date: '2026-07-22',
+        requested_by: 'Sales Operations',
+        products_included: [
+          {
+            id: '1',
+            product_code: 'ZUP-EZF-HWK-R0-1',
+            customized_code: 'ZUP-EZF-HWK-R0-1',
+            quantity: 3,
+            custom_notes: 'Special warning paint',
+            configuration: {
+              Brand: 'EZFly (EZF)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Surveillance (SRV)',
+              Gimbal: 'With Gimbal (2-Axis)',
+              Camera: 'Camera - C5',
+              Controller: 'With Master / Slave',
+              Payload: 'No',
+            },
+          },
+        ],
+        milestones: [
+          {
+            id: 'm1',
+            title: 'Batch 1: Initial Assemblies',
+            target_date: '2026-07-20',
+            quantity: 3,
+            special_instructions: 'Standard delivery',
+          },
+        ],
+        addons: [],
+        internal_notes: 'High priority commercial client.',
+      },
+      {
+        work_order_no: 'WO-2026-002',
+        customer_name: 'GeoScan Surveys Corp',
+        contact_person: 'Elena Rostova',
+        contact_mobile: '+1 (555) 034-7728',
+        customer_email: 'e.rostova@geoscan.io',
+        customer_address: '2400 Mapping Boulevard, Denver, CO 80202',
+        purchase_order_number: 'PO-784920',
+        order_type: 'Replacement',
+        payment_status: 'Pending',
+        status: 'Engineering Review',
+        status_item_count: '4/4 ITEM',
+        date_of_request: '2026-07-07',
+        target_delivery_date: '2026-07-20',
+        actual_delivery_date: '2026-08-02',
+        requested_by: 'Field Support',
+        products_included: [
+          {
+            id: '2',
+            product_code: 'ZUP-AMH-HWK-R0-1',
+            customized_code: 'ZUP-AMH-HWK-R0-1 + [Special warning paint]',
+            quantity: 1,
+            custom_notes: 'Special warning paint',
+            configuration: {
+              Brand: 'Ajeet Mini Hawk (AMH)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Inspection (INS)',
+              Gimbal: 'Gimbal (3-Axis)',
+              Camera: 'Day Camera - A5 Mini',
+              Controller: 'MK15 - Controller + Screen',
+              Payload: 'Yes - Trigger',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: 'Replacement unit under warranty.',
+      },
+      {
+        work_order_no: 'WO-2026-003',
+        customer_name: 'Global Transit Express (RTX)',
+        contact_person: 'Marcus Brady',
+        contact_mobile: '+1 (555) 853-7721',
+        customer_email: 'ops@globaltransit.com',
+        customer_address: '88 Logistics Circle, Dallas, TX 75201',
+        purchase_order_number: 'PO-773019',
+        order_type: 'Others',
+        payment_status: 'Partially Paid',
+        status: 'Procurement',
+        status_item_count: '6/7 ITEM',
+        date_of_request: '2026-07-05',
+        target_delivery_date: '2026-07-20',
+        actual_delivery_date: '2026-07-20',
+        requested_by: 'Enterprise Sales',
+        products_included: [
+          {
+            id: '3',
+            product_code: 'ZUP-EZF-HWK-R0-2',
+            customized_code: 'ZUP-EZF-HWK-R0-2 + [Heavy rain-proofing coating]',
+            quantity: 5,
+            custom_notes: 'Heavy rain-proofing coating',
+            configuration: {
+              Brand: 'EZFly (EZF)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Surveillance (SRV)',
+              Gimbal: 'With Gimbal (2-Axis)',
+              Camera: 'Camera - C5',
+              Controller: 'Without Master Slave',
+              Payload: 'No',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: 'Rainproofing required for humid coastal routes.',
+      },
+      {
+        work_order_no: 'WO-2026-004-GEM',
+        customer_name: 'Defense Surveillance & Border Recon Wing (GeM Procurement)',
+        contact_person: 'Col. Vikram Rathore (Consignee Authority)',
+        contact_mobile: '+91 98110 49231',
+        customer_email: 'consignee.scout@gov.defense.in',
+        customer_address: 'Northern Command Logistics Depot, Sector 18, Military Station',
+        purchase_order_number: 'GEM-PO-2026-88910',
+        order_type: 'New',
+        payment_status: 'Pending',
+        status: 'Ready',
+        status_item_count: '1/1 ITEM',
+        date_of_request: '2026-07-02',
+        target_delivery_date: '2026-07-27',
+        actual_delivery_date: '2026-07-26',
+        requested_by: 'Defense Liaison',
+        products_included: [
+          {
+            id: '4',
+            product_code: 'ZUP-EZF-HWK-R0-1',
+            customized_code: 'ZUP-EZF-HWK-R0-1 + [MIL-Spec Encrypted Telemetry + Hardened Carbon]',
+            quantity: 2,
+            custom_notes: 'Mil-Spec Encrypted Telemetry Module + Hardened Carbon Chassis',
+            configuration: {
+              Brand: 'EZFly (EZF)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Surveillance (SRV)',
+              Gimbal: 'With Gimbal (2-Axis)',
+              Camera: 'Camera - C5',
+              Controller: 'With Master / Slave',
+              Payload: 'No',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: 'Requires defense inspection sign-off.',
+      },
+      {
+        work_order_no: 'WO-2026-005',
+        customer_name: 'AeroTech Commercial Deliveries Ltd',
+        contact_person: 'Sophia Chen',
+        contact_mobile: '+1 (555) 234-8890',
+        customer_email: 's.chen@aerotech.com',
+        customer_address: '700 Innovation Way, Austin, TX 78701',
+        purchase_order_number: 'PO-A983-9921',
+        order_type: 'New',
+        payment_status: 'Paid',
+        status: 'Ready',
+        status_item_count: '1/1 ITEM',
+        date_of_request: '2026-07-08',
+        target_delivery_date: '2026-07-25',
+        actual_delivery_date: '2026-07-25',
+        requested_by: 'Commercial Sales',
+        products_included: [
+          {
+            id: '5',
+            product_code: 'ZUP-AMH-HWK-R0-2',
+            customized_code: 'ZUP-AMH-HWK-R0-2 + [Standard Cam Drop]',
+            quantity: 1,
+            custom_notes: 'Standard commercial dual camera payload',
+            configuration: {
+              Brand: 'Ajeet Mini Hawk (AMH)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Inspection (INS)',
+              Gimbal: 'Gimbal (3-Axis)',
+              Camera: 'Day Camera - A5 Mini',
+              Controller: 'MK15 - Controller + Screen',
+              Payload: 'Yes - Servo',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: '',
+      },
+      {
+        work_order_no: 'WO-2026-006-POL',
+        customer_name: 'State Police Department & Disaster Response Directorate',
+        contact_person: 'Superintendent R.K. Sharma (IPS)',
+        contact_mobile: '+91 94120 44001',
+        customer_email: 'scout.policedispatch@gov.in',
+        customer_address: 'Police Headquarters, 5th Floor Command Center, Sector 3',
+        purchase_order_number: 'STATE-POL-TENDER-2026-4401',
+        order_type: 'New',
+        payment_status: 'Paid',
+        status: 'Ready',
+        status_item_count: '1/1 ITEM',
+        date_of_request: '2026-07-10',
+        target_delivery_date: '2026-07-28',
+        actual_delivery_date: '2026-07-26',
+        requested_by: 'Public Safety Team',
+        products_included: [
+          {
+            id: '6',
+            product_code: 'ZUP-EZF-HWK-R0-1',
+            customized_code: 'ZUP-EZF-HWK-R0-1 + [Police Strobe + 30x Zoom + Thermal IR]',
+            quantity: 4,
+            custom_notes: 'Police Strobe Lighting + 30x Optical Zoom + Thermal EO Gimbal',
+            configuration: {
+              Brand: 'EZFly (EZF)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Surveillance (SRV)',
+              Gimbal: 'With Gimbal (2-Axis)',
+              Camera: 'Camera - C5',
+              Controller: 'With Master / Slave',
+              Payload: 'No',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: '',
+      },
+      {
+        work_order_no: 'WO-2026-007-AGRI',
+        customer_name: 'Precision Agri-Tech & Forestry Surveys Ltd',
+        contact_person: 'David Miller',
+        contact_mobile: '+1 (555) 682-9920',
+        customer_email: 'd.miller@precisionagri.io',
+        customer_address: '450 Agronomy Parkway, Suite 1200, Fresno, CA 93720',
+        purchase_order_number: 'PO-AGRI-2026-7731',
+        order_type: 'New',
+        payment_status: 'Paid',
+        status: 'Ready',
+        status_item_count: '1/1 ITEM',
+        date_of_request: '2026-07-12',
+        target_delivery_date: '2026-07-29',
+        actual_delivery_date: '2026-07-29',
+        requested_by: 'Agricultural Division',
+        products_included: [
+          {
+            id: '7',
+            product_code: 'ZUP-EZF-HWK-R0-1',
+            customized_code: 'ZUP-EZF-HWK-R0-1 + [Multispectral Sensor + 2x Packs]',
+            quantity: 3,
+            custom_notes: 'Multispectral Sensor Payload + 2x Extra Flight Packs',
+            configuration: {
+              Brand: 'EZFly (EZF)',
+              Platform: 'Hawk (HWK)',
+              Application: 'Surveillance (SRV)',
+              Gimbal: 'With Gimbal (2-Axis)',
+              Camera: 'Camera - C5',
+              Controller: 'With Master / Slave',
+              Payload: 'No',
+            },
+          },
+        ],
+        milestones: [],
+        addons: [],
+        internal_notes: '',
+      },
+    ];
+
+    for (const item of mockOrders) {
+      await this.jobOrderRepo.save(this.jobOrderRepo.create(item));
+    }
+  }
+
+  async getJobOrders() {
+    await this.seedDefaultJobOrdersIfEmpty();
+    const [orders, count] = await this.jobOrderRepo.findAndCount({
+      order: { created_at: 'DESC' },
+    });
+    return {
+      orders,
+      count,
+    };
+  }
+
+  async getJobOrderById(id: string) {
+    const order = await this.jobOrderRepo.findOne({ where: { id } });
+    if (!order) {
+      throw new NotFoundException(`Job order with ID ${id} not found`);
+    }
+    return order;
+  }
+
+  async createJobOrder(dto: CreateJobOrderDto) {
+    const newOrder = this.jobOrderRepo.create({
+      work_order_no: dto.workOrderNo.trim(),
+      purchase_order_number: dto.purchaseOrderNumber?.trim() || null,
+      date_of_request:
+        dto.dateOfRequest || new Date().toISOString().split('T')[0],
+      requested_by: dto.requestedBy?.trim() || 'Sales Team / Operator',
+      customer_name: dto.customerName.trim(),
+      contact_person: dto.contactPerson?.trim() || null,
+      contact_mobile: dto.contactMobile?.trim() || null,
+      customer_email: dto.customerEmail?.trim() || null,
+      customer_address: dto.customerAddress?.trim() || null,
+      target_delivery_date: dto.targetDeliveryDate || null,
+      actual_delivery_date: dto.actualDeliveryDate || null,
+      payment_status: dto.paymentStatus || 'Pending',
+      order_type: dto.orderType || 'New',
+      pdf_attachment_url: dto.pdfAttachmentUrl || null,
+      products_included: dto.productsIncluded || [],
+      milestones: dto.milestones || [],
+      addons: dto.addons || [],
+      internal_notes: dto.internalNotes || null,
+      status: dto.status || 'Engineering Review',
+      status_item_count:
+        dto.statusItemCount ||
+        `${dto.productsIncluded?.length || 1}/${dto.productsIncluded?.length || 1} ITEM`,
+    });
+
+    return await this.jobOrderRepo.save(newOrder);
+  }
+
+  async updateJobOrder(id: string, dto: UpdateJobOrderDto) {
+    const order = await this.getJobOrderById(id);
+
+    if (dto.workOrderNo !== undefined)
+      order.work_order_no = dto.workOrderNo.trim();
+    if (dto.purchaseOrderNumber !== undefined)
+      order.purchase_order_number = dto.purchaseOrderNumber.trim();
+    if (dto.dateOfRequest !== undefined)
+      order.date_of_request = dto.dateOfRequest;
+    if (dto.requestedBy !== undefined) order.requested_by = dto.requestedBy;
+    if (dto.customerName !== undefined)
+      order.customer_name = dto.customerName.trim();
+    if (dto.contactPerson !== undefined)
+      order.contact_person = dto.contactPerson;
+    if (dto.contactMobile !== undefined)
+      order.contact_mobile = dto.contactMobile;
+    if (dto.customerEmail !== undefined)
+      order.customer_email = dto.customerEmail;
+    if (dto.customerAddress !== undefined)
+      order.customer_address = dto.customerAddress;
+    if (dto.targetDeliveryDate !== undefined)
+      order.target_delivery_date = dto.targetDeliveryDate;
+    if (dto.actualDeliveryDate !== undefined)
+      order.actual_delivery_date = dto.actualDeliveryDate;
+    if (dto.paymentStatus !== undefined)
+      order.payment_status = dto.paymentStatus;
+    if (dto.orderType !== undefined) order.order_type = dto.orderType;
+    if (dto.pdfAttachmentUrl !== undefined)
+      order.pdf_attachment_url = dto.pdfAttachmentUrl;
+    if (dto.productsIncluded !== undefined)
+      order.products_included = dto.productsIncluded;
+    if (dto.milestones !== undefined) order.milestones = dto.milestones;
+    if (dto.addons !== undefined) order.addons = dto.addons;
+    if (dto.internalNotes !== undefined)
+      order.internal_notes = dto.internalNotes;
+    if (dto.status !== undefined) order.status = dto.status;
+    if (dto.statusItemCount !== undefined)
+      order.status_item_count = dto.statusItemCount;
+
+    return await this.jobOrderRepo.save(order);
+  }
+
+  async deleteJobOrder(id: string) {
+    const order = await this.getJobOrderById(id);
+    await this.jobOrderRepo.remove(order);
+    return {
+      success: true,
+      message: 'Job order deleted successfully',
     };
   }
 }

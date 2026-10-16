@@ -13,8 +13,10 @@ import { JwtAuthGuard } from 'src/jwt/jwt-gaurd';
 import {
   CreateCategoryDto,
   CreateConfiguredProductDto,
+  CreateJobOrderDto,
   CreateOptionCodeDto,
   UpdateConfiguredProductDto,
+  UpdateJobOrderDto,
 } from './dto/sales.dto';
 import { SalesService } from './sales.service';
 
@@ -119,4 +121,53 @@ export class SalesController {
   async deleteConfiguredProduct(@Param('id') id: string) {
     return this.salesService.deleteConfiguredProduct(id);
   }
+
+  // Job Orders
+  @Get('job-orders')
+  async getJobOrders() {
+    const res = await this.salesService.getJobOrders();
+    return {
+      success: true,
+      data: res.orders,
+      count: res.count,
+    };
+  }
+
+  @Get('job-orders/:id')
+  async getJobOrderById(@Param('id') id: string) {
+    const order = await this.salesService.getJobOrderById(id);
+    return {
+      success: true,
+      data: order,
+    };
+  }
+
+  @Post('job-orders')
+  async createJobOrder(@Body() body: CreateJobOrderDto) {
+    const order = await this.salesService.createJobOrder(body);
+    return {
+      success: true,
+      data: order,
+      message: 'Job order created successfully',
+    };
+  }
+
+  @Put('job-orders/:id')
+  async updateJobOrder(
+    @Param('id') id: string,
+    @Body() body: UpdateJobOrderDto,
+  ) {
+    const order = await this.salesService.updateJobOrder(id, body);
+    return {
+      success: true,
+      data: order,
+      message: 'Job order updated successfully',
+    };
+  }
+
+  @Delete('job-orders/:id')
+  async deleteJobOrder(@Param('id') id: string) {
+    return this.salesService.deleteJobOrder(id);
+  }
 }
+
