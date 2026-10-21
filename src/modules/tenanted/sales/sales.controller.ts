@@ -17,6 +17,7 @@ import {
   CreateOptionCodeDto,
   UpdateConfiguredProductDto,
   UpdateJobOrderDto,
+  UpdateScheduleSpecDto,
 } from './dto/sales.dto';
 import { SalesService } from './sales.service';
 
@@ -169,5 +170,39 @@ export class SalesController {
   async deleteJobOrder(@Param('id') id: string) {
     return this.salesService.deleteJobOrder(id);
   }
+
+  // Production Scheduling Endpoints
+  @Get('production-schedules')
+  async getProductionSchedules() {
+    const res = await this.salesService.getProductionSchedules();
+    return {
+      success: true,
+      data: res.orders,
+      count: res.count,
+    };
+  }
+
+  @Get('production-schedules/:id')
+  async getProductionScheduleById(@Param('id') id: string) {
+    const order = await this.salesService.getProductionScheduleById(id);
+    return {
+      success: true,
+      data: order,
+    };
+  }
+
+  @Put('production-schedules/:id')
+  async updateProductionSchedule(
+    @Param('id') id: string,
+    @Body() body: UpdateScheduleSpecDto,
+  ) {
+    const order = await this.salesService.updateProductionSchedule(id, body);
+    return {
+      success: true,
+      data: order,
+      message: 'Production schedule spec saved successfully',
+    };
+  }
 }
+
 

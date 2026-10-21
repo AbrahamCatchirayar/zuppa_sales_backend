@@ -14,6 +14,7 @@ import {
   CreateOptionCodeDto,
   UpdateConfiguredProductDto,
   UpdateJobOrderDto,
+  UpdateScheduleSpecDto,
 } from './dto/sales.dto';
 import { Category } from './entities/category.entity';
 import { ConfiguredProduct } from './entities/configured-product.entity';
@@ -833,6 +834,8 @@ export class SalesService {
     if (dto.status !== undefined) order.status = dto.status;
     if (dto.statusItemCount !== undefined)
       order.status_item_count = dto.statusItemCount;
+    if (dto.scheduleSpec !== undefined)
+      order.schedule_spec = dto.scheduleSpec;
 
     return await this.jobOrderRepo.save(order);
   }
@@ -845,4 +848,24 @@ export class SalesService {
       message: 'Job order deleted successfully',
     };
   }
+
+  // Production Scheduler
+  async getProductionSchedules() {
+    await this.seedDefaultJobOrdersIfEmpty();
+    const [orders, count] = await this.jobOrderRepo.findAndCount({
+      order: { work_order_no: 'ASC' },
+    });
+    return { orders, count };
+  }
+
+  async getProductionScheduleById(id: string) {
+    return await this.getJobOrderById(id);
+  }
+
+  async updateProductionSchedule(id: string, dto: UpdateScheduleSpecDto) {
+    const order = await this.getJobOrderById(id);
+    order.schedule_spec = dto.scheduleSpec || {};
+    return await this.jobOrderRepo.save(order);
+  }
 }
+

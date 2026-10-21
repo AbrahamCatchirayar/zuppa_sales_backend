@@ -16,7 +16,8 @@
   "TENENT_ROLES": [
     "ADMIN",
     "SALES",
-    "ENGINEERING"
+    "ENGINEERING",
+    "PRODUCTION_SCHEDULER"
   ],
 
   "MODULES": [

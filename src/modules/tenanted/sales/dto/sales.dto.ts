@@ -284,4 +284,15 @@ export class UpdateJobOrderDto {
   @IsOptional()
   @IsString()
   statusItemCount?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  scheduleSpec?: Record<string, any>;
 }
+
+export class UpdateScheduleSpecDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  scheduleSpec: Record<string, any>;
+}
+

@@ -72,6 +72,9 @@ export class JobOrder {
   @Column({ type: 'varchar', default: '1/1 ITEM' })
   status_item_count: string;
 
+  @Column({ type: 'jsonb', default: {} })
+  schedule_spec: Record<string, any>;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 

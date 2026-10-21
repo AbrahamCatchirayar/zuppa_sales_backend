@@ -78,12 +78,14 @@ export const AdminModules = [
   'ADMIN',
   'SALES',
   'ENGINEERING',
+  'PRODUCTION_SCHEDULER',
 ];
 
 export const TENENT_ROLE = [
   'ADMIN',
   'SALES',
   'ENGINEERING',
+  'PRODUCTION_SCHEDULER',
 ];
 
 export const TenentModules = [
@@ -161,6 +163,12 @@ export const default_tenent_roles = {
     ORGANIZATION: ['READ'],
   },
   ENGINEERING: {
+    USER: ['READ'],
+    SETTINGS: [],
+    HEADER: ['USERS'],
+    ORGANIZATION: ['READ'],
+  },
+  PRODUCTION_SCHEDULER: {
     USER: ['READ'],
     SETTINGS: [],
     HEADER: ['USERS'],
