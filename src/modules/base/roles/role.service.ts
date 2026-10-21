@@ -56,12 +56,11 @@ export class AdminRoleService {
       // Get all existing role access entries in a single query
       const existingRoleAccess = await this.tenentRoleAccessModel.find({
         relations: ['role'],
-        select: ['module', 'role'],
       });
 
       // Create a Set of existing role-module combinations for O(1) lookup
       const existingCombinations = new Set(
-        existingRoleAccess.map((ra) => `${ra.role.name}-${ra.module}`),
+        existingRoleAccess.map((ra) => `${(ra.role?.name || (ra as any).role)}-${ra.module}`),
       );
 
       // Filter out entries that already exist
